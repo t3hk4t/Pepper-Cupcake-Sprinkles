@@ -22,6 +22,7 @@ import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayS
 import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatExecutor;
 import com.aldebaran.qi.sdk.object.conversation.TopicStatus;
+import com.aldebaran.qi.sdk.object.human.Human;
 import com.aldebaran.qi.sdk.object.humanawareness.HumanAwareness;
 import com.softbankrobotics.pepperapptemplate.Executors.FragmentExecutor;
 import com.softbankrobotics.pepperapptemplate.Executors.VariableExecutor;
@@ -69,11 +70,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     }
 
-    /**
-     * Sets the locale for this activity
-     *
-     * @param strLocale the string used to build the new locale
-     */
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
         // Create a new say action.
@@ -89,6 +85,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
         MediaPlayer mp = MediaPlayer.create(this, R.raw.sveiki);
         mp.start();
+
 
         Log.d(TAG, "onRobotFocusedGained");
         this.qiContext = qiContext;
@@ -112,12 +109,15 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         chatFuture = currentChatBot.chat.async().run();
         humanAwareness = getQiContext().getHumanAwareness();
         humanAwareness.async().addOnEngagedHumanChangedListener(engagedHuman -> {
-            if (getFragment() instanceof SplashFragment) {
+            /*if (getFragment() instanceof SplashFragment) {
                 if (engagedHuman != null) {
                     setFragment(new MainFragment());
                 }
             } else {
                 countDownNoInteraction.reset();
+            }*/
+            if (engagedHuman != null) {
+                saySomething();
             }
         });
     }
@@ -178,6 +178,16 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     public ChatData getCurrentChatBot() {
         return currentChatBot;
+    }
+
+
+    public void saySomething() {
+        MediaPlayer mp = MediaPlayer.create(this, R.raw.sveiki);
+        mp.start();
+
+        MediaPlayer mp2 = MediaPlayer.create(this, R.raw.sveiciensv2);
+        mp2.start();
+        
     }
 
     public QiContext getQiContext() {
