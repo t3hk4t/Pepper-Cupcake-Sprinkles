@@ -1,4 +1,7 @@
 package com.softbankrobotics.pepperapptemplate;
+import android.media.MediaPlayer;
+import android.content.Context;
+
 
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -61,7 +64,6 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         countDownNoInteraction = new CountDownNoInteraction(this, new SplashFragment(),
                 30000, 10000);
         countDownNoInteraction.start();
-        updateLocale("en");
         setContentView(R.layout.activity_main);
         Log.d(TAG, "test");
 
@@ -72,19 +74,10 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
      *
      * @param strLocale the string used to build the new locale
      */
-
-    private void updateLocale(String strLocale) {
-        Locale locale = new Locale(strLocale);
-        config.setLocale(locale);
-        res.updateConfiguration(config, res.getDisplayMetrics());
-    }
-
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
-
         // Create a new say action.
-        Phrase phrase = new Phrase("HAIL HITTLER!");
-
+        Phrase phrase = new Phrase("Labdien Kariņa kungs!");
 // Build the action.
         Say say = SayBuilder.with(qiContext)
                 .withPhrase(phrase)
@@ -92,7 +85,12 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
 // Run the action synchronously.
         say.run();
-        /*Log.d(TAG, "onRobotFocusedGained");
+
+
+        MediaPlayer mp = MediaPlayer.create(this, R.raw.sveiki);
+        mp.start();
+
+        Log.d(TAG, "onRobotFocusedGained");
         this.qiContext = qiContext;
         englishChatBot = new ChatData(this, qiContext, new Locale("en"), topicNames, true);
         Map<String, QiChatExecutor> executors = new HashMap<>();
@@ -121,7 +119,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             } else {
                 countDownNoInteraction.reset();
             }
-        });*/
+        });
     }
 
     @Override
