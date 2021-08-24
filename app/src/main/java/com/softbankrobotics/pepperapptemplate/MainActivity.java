@@ -13,8 +13,10 @@ import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayStrategy;
+import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatExecutor;
 import com.aldebaran.qi.sdk.object.conversation.TopicStatus;
 import com.aldebaran.qi.sdk.object.humanawareness.HumanAwareness;
@@ -25,6 +27,7 @@ import com.softbankrobotics.pepperapptemplate.Fragments.MainFragment;
 import com.softbankrobotics.pepperapptemplate.Fragments.SplashFragment;
 import com.softbankrobotics.pepperapptemplate.Utils.ChatData;
 import com.softbankrobotics.pepperapptemplate.Utils.CountDownNoInteraction;
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -78,7 +81,18 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
-        Log.d(TAG, "onRobotFocusedGained");
+
+        // Create a new say action.
+        Phrase phrase = new Phrase("HAIL HITTLER!");
+
+// Build the action.
+        Say say = SayBuilder.with(qiContext)
+                .withPhrase(phrase)
+                .build();
+
+// Run the action synchronously.
+        say.run();
+        /*Log.d(TAG, "onRobotFocusedGained");
         this.qiContext = qiContext;
         englishChatBot = new ChatData(this, qiContext, new Locale("en"), topicNames, true);
         Map<String, QiChatExecutor> executors = new HashMap<>();
@@ -107,13 +121,14 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             } else {
                 countDownNoInteraction.reset();
             }
-        });
+        });*/
     }
 
     @Override
     public void onRobotFocusLost() {
-        humanAwareness.async().removeAllOnEngagedHumanChangedListeners();
-        this.qiContext = null;
+        //Do nothing
+        /*humanAwareness.async().removeAllOnEngagedHumanChangedListeners();
+        this.qiContext = null;*/
     }
 
     @Override
