@@ -13,3 +13,4 @@ We tested a few basic things like the Say action [Say — QiSDK (aldebaran.com)]
 To do next:
 - merge both test functionalities
 - try Google Cloud Translation in place of the local model
+- Add initial fragment that will lead to the tutorial activites from the github
