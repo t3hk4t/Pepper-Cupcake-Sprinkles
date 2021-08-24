@@ -54,11 +54,12 @@ dependencies {
     implementation 'com.aldebaran:qisdk:1.7.5'
     implementation 'com.aldebaran:qisdk-design:1.7.5'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-
-
+    implementation 'com.google.mlkit:translate:16.1.2'
+    implementation 'com.google.android.material:material:1.2.0'
 
 
 }
 repositories {
     mavenCentral()
+    google()
 }

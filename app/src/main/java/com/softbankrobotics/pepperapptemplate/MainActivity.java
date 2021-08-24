@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -20,6 +21,13 @@ import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatExecutor;
 import com.aldebaran.qi.sdk.object.conversation.TopicStatus;
 import com.aldebaran.qi.sdk.object.humanawareness.HumanAwareness;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.mlkit.common.model.DownloadConditions;
+import com.google.mlkit.nl.translate.TranslateLanguage;
+import com.google.mlkit.nl.translate.Translation;
+import com.google.mlkit.nl.translate.Translator;
+import com.google.mlkit.nl.translate.TranslatorOptions;
 import com.softbankrobotics.pepperapptemplate.Executors.FragmentExecutor;
 import com.softbankrobotics.pepperapptemplate.Executors.VariableExecutor;
 import com.softbankrobotics.pepperapptemplate.Fragments.LoadingFragment;
@@ -29,11 +37,30 @@ import com.softbankrobotics.pepperapptemplate.Utils.ChatData;
 import com.softbankrobotics.pepperapptemplate.Utils.CountDownNoInteraction;
 import com.aldebaran.qi.sdk.object.conversation.Say;
 
+import com.aldebaran.qi.sdk.builder.SayBuilder;
+import com.aldebaran.qi.sdk.object.conversation.Phrase;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.mlkit.common.model.DownloadConditions;
+import com.google.mlkit.common.model.RemoteModelManager;
+import com.google.mlkit.nl.translate.TranslateLanguage;
+import com.google.mlkit.nl.translate.TranslateRemoteModel;
+import com.google.mlkit.nl.translate.Translation;
+import com.google.mlkit.nl.translate.Translator;
+import com.google.mlkit.nl.translate.TranslatorOptions;
+import com.google.mlkit.common.model.DownloadConditions;
+import com.google.mlkit.nl.translate.*;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
 
@@ -50,6 +77,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private android.content.res.Configuration config;
     private Resources res;
     private Future<Void> chatFuture;
+    private Translator englishLatvianTranslator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,23 +110,17 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
 
-        // Create a new say action.
-        Phrase phrase = new Phrase("HAIL HITTLER!");
-
-// Build the action.
-        Say say = SayBuilder.with(qiContext)
-                .withPhrase(phrase)
-                .build();
 
 // Run the action synchronously.
-        say.run();
-        /*Log.d(TAG, "onRobotFocusedGained");
+        //say.run();
+        Log.d(TAG, "onRobotFocusedGained");
         this.qiContext = qiContext;
         englishChatBot = new ChatData(this, qiContext, new Locale("en"), topicNames, true);
         Map<String, QiChatExecutor> executors = new HashMap<>();
         executors.put("FragmentExecutor", new FragmentExecutor(qiContext, this));
         executors.put("VariableExecutor", new VariableExecutor(qiContext, this));
         englishChatBot.setupExecutors(executors);
+        /*
         englishChatBot.setupQiVariable("qiVariable");
         currentChatBot = englishChatBot;
         currentChatBot.chat.async().addOnStartedListener(() -> {
@@ -122,6 +144,66 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
                 countDownNoInteraction.reset();
             }
         });*/
+
+
+        TranslatorOptions options =
+                new TranslatorOptions.Builder()
+                        .setSourceLanguage(TranslateLanguage.ENGLISH)
+                        .setTargetLanguage(TranslateLanguage.LATVIAN)
+                        .build();
+        englishLatvianTranslator =
+                Translation.getClient(options);
+
+        DownloadConditions conditions = new DownloadConditions.Builder()
+                .requireWifi()
+                .build();
+
+        englishLatvianTranslator.downloadModelIfNeeded(conditions)
+                .addOnSuccessListener(
+                        new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void v) {
+                            }
+                        })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                            }
+                        });
+
+        getLifecycle().addObserver(englishLatvianTranslator);
+
+        // Testing translate functions
+        // If a method is overridden and you're using actions, make sure they're async!
+        englishLatvianTranslator.translate("door")
+                .addOnSuccessListener(
+                        new OnSuccessListener<String>() {
+                            @Override
+                            public void onSuccess(@NonNull String translatedText) {
+                                Phrase phrase = new Phrase(translatedText);
+                                Future<Say> sayFuture = SayBuilder.with(qiContext)
+                                        .withPhrase(phrase)
+                                        .buildAsync();
+                                sayFuture.thenConsume(speakFuture -> {
+                                    if (speakFuture.isSuccess()) {
+                                        Say say = speakFuture.get();
+                                        say.run();
+                                    } else if (speakFuture.isCancelled()) {
+                                        // Handle cancelled state.
+                                    } else {
+                                        // Handle error state.
+                                    }
+                                });
+
+                            }
+                        })
+                .addOnFailureListener(
+                        new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                            }
+                        });
     }
 
     @Override

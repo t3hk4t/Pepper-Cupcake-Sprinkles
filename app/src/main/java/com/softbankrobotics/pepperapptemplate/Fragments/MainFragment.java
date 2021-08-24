@@ -2,6 +2,8 @@ package com.softbankrobotics.pepperapptemplate.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.ContextThemeWrapper;
@@ -13,6 +15,10 @@ import androidx.fragment.app.Fragment;
 
 import com.softbankrobotics.pepperapptemplate.MainActivity;
 import com.softbankrobotics.pepperapptemplate.R;
+
+import com.google.android.material.textfield.TextInputEditText;
+
+import com.aldebaran.qi.sdk.object.conversation.Say;
 
 public class MainFragment extends Fragment {
 
@@ -51,6 +57,8 @@ public class MainFragment extends Fragment {
                 (v) -> ma.setFragment(new ScreenOneFragment()));
         view.findViewById(R.id.main_button_frag_two).setOnClickListener(
                 (v) -> ma.setFragment(new ScreenTwoFragment()));
+
+
     }
 
 }

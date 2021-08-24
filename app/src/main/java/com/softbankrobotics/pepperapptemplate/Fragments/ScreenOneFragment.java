@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import com.softbankrobotics.pepperapptemplate.MainActivity;
 import com.softbankrobotics.pepperapptemplate.R;
 
+
 public class ScreenOneFragment extends Fragment {
 
     private static final String TAG = "MSI_ScreenOneFragment";
