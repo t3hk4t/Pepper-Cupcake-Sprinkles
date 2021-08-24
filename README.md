@@ -11,6 +11,6 @@ Once you know the basic terminology and architecture of the basic android app, t
 We tested a few basic things like the Say action [Say — QiSDK (aldebaran.com)](https://android.aldebaran.com/sdk/doc/pepper-sdk/ch4_api/conversation/reference/say.html), playing a sound on the robot [audio - Play sound on button click android - Stack Overflow](https://stackoverflow.com/questions/18459122/play-sound-on-button-click-android), as well as translation using Google's ML Kit. Two seperate test functionalities- greeting upon human detection and translating (english -> latvian) text and saying it- have been implemented in their most basic forms in separate branches.
 
 To do next:
-- merge both test functionalities
-- try Google Cloud Translation in place of the local model
+- Merge both test functionalities
+- Try Google Cloud Translation in place of the local model
 - Add initial fragment that will lead to the tutorial activites from the github
