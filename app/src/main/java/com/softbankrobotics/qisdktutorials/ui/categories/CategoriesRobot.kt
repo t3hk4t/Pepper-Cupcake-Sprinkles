@@ -11,18 +11,28 @@ import android.util.Log
 import com.aldebaran.qi.Future
 import com.aldebaran.qi.sdk.QiContext
 import com.aldebaran.qi.sdk.QiSDK
+import android.media.MediaPlayer
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks
-import com.aldebaran.qi.sdk.builder.ChatBuilder
-import com.aldebaran.qi.sdk.builder.QiChatbotBuilder
-import com.aldebaran.qi.sdk.builder.SayBuilder
-import com.aldebaran.qi.sdk.builder.TopicBuilder
 import com.aldebaran.qi.sdk.`object`.conversation.QiChatVariable
 import com.aldebaran.qi.sdk.`object`.conversation.QiChatbot
+import com.aldebaran.qi.sdk.`object`.conversation.Say
 import com.aldebaran.qi.sdk.`object`.conversation.TopicStatus
+import com.aldebaran.qi.sdk.`object`.human.Human
+import com.aldebaran.qi.sdk.`object`.humanawareness.EngageHuman
+import com.aldebaran.qi.sdk.`object`.humanawareness.HumanAwareness
+import com.aldebaran.qi.sdk.builder.*
 import com.softbankrobotics.qisdktutorials.R
 import com.softbankrobotics.qisdktutorials.model.data.Tutorial
 import com.softbankrobotics.qisdktutorials.model.data.TutorialCategory
 import com.softbankrobotics.qisdktutorials.model.data.TutorialLevel
+import kotlin.coroutines.*
+import com.softbankrobotics.interactionsample.utils.HumanEngager
+import java.util.*
+import com.aldebaran.qi.sdk.builder.SayBuilder
+
+
+
+
 
 private const val TAG = "CategoriesRobot"
 
@@ -38,10 +48,18 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
     private var smartTopicStatus: TopicStatus? = null
     private var qiChatbot: QiChatbot? = null
     private var chatFuture: Future<Void>? = null
+    private var something = false;
     private var selectedCategory = TutorialCategory.TALK
+    private var say1: Future<Say>? = null
+    private var say2: Future<Say>? = null
     private var selectedLevel = TutorialLevel.BASIC
     private var levelVariable: QiChatVariable? = null
+    private var mediaPlayer: MediaPlayer? = null
     private var isFirstIntro = true
+    private var engaging = false
+    private var awareness: HumanAwareness? = null
+    private var qiContext: QiContext? = null
+    private var humanengager: HumanEngager? = null
 
     override fun register(activity: CategoriesActivity) {
         QiSDK.register(activity, this)
@@ -64,6 +82,7 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
             presenter.goToTutorial(tutorial)
         }
         this.chatFuture = chatFuture
+
     }
 
     override fun selectTopic(category: TutorialCategory) {
@@ -84,12 +103,31 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
     }
 
     override fun onRobotFocusGained(qiContext: QiContext) {
-        SayBuilder.with(qiContext)
+        this.qiContext = qiContext
+        awareness = qiContext.humanAwareness
+
+
+        humanengager = HumanEngager(qiContext, 5000)
+        humanengager!!.start()
+
+        /*say1 = SayBuilder.with(qiContext)
+            .withText("Hello")
+            .buildAsync()
+
+        say2 = SayBuilder.with(qiContext)
+            .withText("Goodbye")
+            .buildAsync()
+
+        awareness!!.async().addOnRecommendedHumanToEngageChangedListener { recommendedHuman: Human? ->
+            if (!engaging) {
+                tryToEngageHuman(recommendedHuman, say1!!, say2!!)
+            }
+        }
+*/
+        /*SayBuilder.with(qiContext)
                 .withText(qiContext.getString(introSentenceRes()))
                 .build()
                 .run()
-
-        isFirstIntro = false
 
         val commonTopic = TopicBuilder.with(qiContext)
                 .withResource(R.raw.common)
@@ -152,16 +190,18 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
 
         qiChatbot.addOnEndedListener { presenter.goToTutorialForQiChatbotId(it) }
         this.qiChatbot = qiChatbot
-        chatFuture = chat.async().run()
+        chatFuture = chat.async().run()*/
     }
 
     override fun onRobotFocusLost() {
+        this.qiContext = null
         qiChatbot?.let {
             it.removeAllOnBookmarkReachedListeners()
             it.removeAllOnEndedListeners()
             qiChatbot = null
         }
         chatFuture = null
+
         talkTopicStatus = null
         moveTopicStatus = null
         smartTopicStatus = null
@@ -175,6 +215,33 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
      * Enable the topic corresponding to the specified tutorial category.
      * @param category the tutorial category
      */
+
+    private fun tryToEngageHuman(human: Human?, say1 : Future<Say>, say2 : Future<Say>) {
+        if (human != null) {
+            engaging = true;
+            val engage: EngageHuman = EngageHumanBuilder.with(qiContext).withHuman(human).build()
+            engage.addOnHumanIsEngagedListener {
+                mediaPlayer = MediaPlayer.create(qiContext, R.raw.hello)
+                mediaPlayer?.start()
+                val say: Say = say1.get()
+                say.run()
+            }
+
+            engage.addOnHumanIsDisengagingListener {
+                mediaPlayer = MediaPlayer.create(qiContext, R.raw.bye)
+                mediaPlayer?.start()
+                val say: Say = say2.get()
+                say.run()
+                engaging = false;
+            }
+
+
+        }else{
+            engaging = false;
+        }
+    }
+
+
     private fun enableTopic(category: TutorialCategory) {
         val talkFuture = talkTopicStatus?.async()?.setEnabled(false)
         val moveFuture = moveTopicStatus?.async()?.setEnabled(false)

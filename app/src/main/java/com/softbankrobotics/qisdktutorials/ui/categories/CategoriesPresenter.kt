@@ -52,6 +52,7 @@ internal class CategoriesPresenter : CategoriesContract.Presenter {
         view?.goToTutorial(tutorial)
     }
 
+
     private fun updateTutorials() {
         loadedTutorials = tutorialRepository.getTutorials(selectedCategory, selectedLevel)
         view?.selectCategory(selectedCategory)
