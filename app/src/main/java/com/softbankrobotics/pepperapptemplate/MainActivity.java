@@ -8,6 +8,8 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -24,6 +26,13 @@ import com.aldebaran.qi.sdk.object.conversation.QiChatExecutor;
 import com.aldebaran.qi.sdk.object.conversation.TopicStatus;
 import com.aldebaran.qi.sdk.object.human.Human;
 import com.aldebaran.qi.sdk.object.humanawareness.HumanAwareness;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.mlkit.common.model.DownloadConditions;
+import com.google.mlkit.nl.translate.TranslateLanguage;
+import com.google.mlkit.nl.translate.Translation;
+import com.google.mlkit.nl.translate.Translator;
+import com.google.mlkit.nl.translate.TranslatorOptions;
 import com.softbankrobotics.pepperapptemplate.Executors.FragmentExecutor;
 import com.softbankrobotics.pepperapptemplate.Executors.VariableExecutor;
 import com.softbankrobotics.pepperapptemplate.Fragments.LoadingFragment;
@@ -32,6 +41,8 @@ import com.softbankrobotics.pepperapptemplate.Fragments.SplashFragment;
 import com.softbankrobotics.pepperapptemplate.Utils.ChatData;
 import com.softbankrobotics.pepperapptemplate.Utils.CountDownNoInteraction;
 import com.aldebaran.qi.sdk.object.conversation.Say;
+import com.softbankrobotics.pepperapptemplate.Utils.LocalTranslator;
+import com.softbankrobotics.pepperapptemplate.Utils.TranslatorTask;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -54,6 +65,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private android.content.res.Configuration config;
     private Resources res;
     private Future<Void> chatFuture;
+    private LocalTranslator translator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,24 +80,13 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         setContentView(R.layout.activity_main);
         Log.d(TAG, "test");
 
+        new TranslatorTask().execute("Get that cash!");
+        int fef = 4;
+
     }
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
-        // Create a new say action.
-        Phrase phrase = new Phrase("Labdien Kariņa kungs!");
-// Build the action.
-        Say say = SayBuilder.with(qiContext)
-                .withPhrase(phrase)
-                .build();
-
-// Run the action synchronously.
-        say.run();
-
-
-        MediaPlayer mp = MediaPlayer.create(this, R.raw.sveiki);
-        mp.start();
-
 
         Log.d(TAG, "onRobotFocusedGained");
         this.qiContext = qiContext;
@@ -109,18 +110,22 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         chatFuture = currentChatBot.chat.async().run();
         humanAwareness = getQiContext().getHumanAwareness();
         humanAwareness.async().addOnEngagedHumanChangedListener(engagedHuman -> {
-            /*if (getFragment() instanceof SplashFragment) {
+            if (getFragment() instanceof SplashFragment) {
                 if (engagedHuman != null) {
                     setFragment(new MainFragment());
                 }
             } else {
                 countDownNoInteraction.reset();
-            }*/
+            }
             if (engagedHuman != null) {
                 saySomething();
             }
         });
+
+
     }
+
+
 
     @Override
     public void onRobotFocusLost() {
