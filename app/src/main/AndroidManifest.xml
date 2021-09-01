@@ -10,6 +10,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity
+            android:name=".ui.categories.VIdeoPlayerActivity"
+            android:exported="true" />
         <activity android:name=".ui.splashscreen.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -40,7 +43,7 @@
         <activity android:name=".ui.tutorials.perceptions.touch.TouchTutorialActivity" />
         <activity android:name=".ui.tutorials.perceptions.detecthumanswithlocalization.DetectHumansWithLocalizationTutorialActivity" />
         <activity android:name=".ui.tutorials.conversation.chatlocale.ChatLocaleTutorialActivity" />
-        <activity android:name="com.softbankrobotics.qisdktutorials.ui.tutorials.motion.extendmap.MapExtensionTutorialActivity"/>
+        <activity android:name=".ui.tutorials.motion.extendmap.MapExtensionTutorialActivity" />
     </application>
 
 </manifest>

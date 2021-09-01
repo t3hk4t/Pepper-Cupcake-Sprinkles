@@ -48,10 +48,7 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
     private var smartTopicStatus: TopicStatus? = null
     private var qiChatbot: QiChatbot? = null
     private var chatFuture: Future<Void>? = null
-    private var something = false;
     private var selectedCategory = TutorialCategory.TALK
-    private var say1: Future<Say>? = null
-    private var say2: Future<Say>? = null
     private var selectedLevel = TutorialLevel.BASIC
     private var levelVariable: QiChatVariable? = null
     private var mediaPlayer: MediaPlayer? = null
@@ -107,7 +104,7 @@ internal class CategoriesRobot(private val presenter: CategoriesContract.Present
         awareness = qiContext.humanAwareness
 
 
-        humanengager = HumanEngager(qiContext, 5000)
+        humanengager = HumanEngager(qiContext, 2000)
         humanengager!!.start()
 
         /*say1 = SayBuilder.with(qiContext)

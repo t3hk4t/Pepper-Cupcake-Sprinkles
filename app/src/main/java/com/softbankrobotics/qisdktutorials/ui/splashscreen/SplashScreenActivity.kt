@@ -12,6 +12,7 @@ import com.aldebaran.qi.sdk.design.activity.RobotActivity
 import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayStrategy
 import com.softbankrobotics.qisdktutorials.R
 import com.softbankrobotics.qisdktutorials.ui.categories.CategoriesActivity
+import com.softbankrobotics.qisdktutorials.ui.categories.VIdeoPlayerActivity
 
 import java.util.Timer
 import java.util.TimerTask
@@ -47,7 +48,8 @@ class SplashScreenActivity : RobotActivity() {
     }
 
     private fun goToCategories() {
-        val intent = Intent(this, CategoriesActivity::class.java)
+        //val intent1 = Intent(this, CategoriesActivity::class.java)
+        val intent = Intent(this, VIdeoPlayerActivity::class.java)
         startActivity(intent)
 
         finish()

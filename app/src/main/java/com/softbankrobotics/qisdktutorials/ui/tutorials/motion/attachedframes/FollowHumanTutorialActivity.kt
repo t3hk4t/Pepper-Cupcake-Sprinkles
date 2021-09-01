@@ -208,7 +208,7 @@ class FollowHumanTutorialActivity : TutorialActivity(), RobotLifecycleCallbacks 
         val robotFrame = qiContext.actuation.robotFrame()
 
         // Return the closest human
-        return humans.minBy {
+        return humans.minByOrNull {
             getDistance(robotFrame, it)
         }
     }

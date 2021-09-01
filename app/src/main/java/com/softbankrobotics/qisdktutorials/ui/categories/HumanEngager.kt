@@ -68,13 +68,14 @@ class HumanEngager(
             //Log.i(TAG,"Building engage");
             val engage: EngageHuman = EngageHumanBuilder.with(qiContext).withHuman(human).build()
             engage.addOnHumanIsEngagedListener(EngageHuman.OnHumanIsEngagedListener {
-                say.run()
+                mediaPlayer = MediaPlayer.create(qiContext, R.raw.labdien)
+                mediaPlayer?.start()
                 setIsInteracting(
                     true
                 )
             })
             engage.addOnHumanIsDisengagingListener {
-                mediaPlayer = MediaPlayer.create(qiContext, R.raw.bye)
+                mediaPlayer = MediaPlayer.create(qiContext, R.raw.uzredzesanos)
                 mediaPlayer?.start()
             }
             engage.async().run().thenConsume(Consumer<Future<Void?>> { fut: Future<Void?>? ->
